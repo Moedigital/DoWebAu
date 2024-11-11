@@ -3,6 +3,7 @@ import axios from 'axios';
 type Options = {
     instrumentalUrl: string;
     onRecorded: (blob: Blob) => void;
+    mediaRecorderOptions?: MediaRecorderOptions; // 添加一个可选的媒体记录器选项
 };
 
 export class DoWebAu {
@@ -16,9 +17,11 @@ export class DoWebAu {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         this.instrumentalUrl = options.instrumentalUrl;
         this.onRecorded = options.onRecorded;
+        this.mediaRecorderOptions = options.mediaRecorderOptions || {}; // 使用默认值或用户提供的选项
     }
 
     private instrumentalUrl: string;
+    private mediaRecorderOptions: MediaRecorderOptions; // 新增属性以存储媒体记录器选项
 
     private async loadInstrumental(url: string): Promise<void> {
         try {
@@ -48,7 +51,7 @@ export class DoWebAu {
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            this.mediaRecorder = new MediaRecorder(stream);
+            this.mediaRecorder = new MediaRecorder(stream, this.mediaRecorderOptions); // 使用用户提供的选项
             this.mediaRecorder.ondataavailable = event => {
                 this.chunks.push(event.data);
             };
