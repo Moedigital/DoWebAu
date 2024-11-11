@@ -50,7 +50,13 @@ export class DoWebAu {
         this.playInstrumental();
 
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    channelCount: 2,
+                    sampleRate: 44100,
+                    sampleSize: 16,
+                    echoCancellation: true
+                } });
             this.mediaRecorder = new MediaRecorder(stream, this.mediaRecorderOptions); // 使用用户提供的选项
             this.mediaRecorder.ondataavailable = event => {
                 this.chunks.push(event.data);
