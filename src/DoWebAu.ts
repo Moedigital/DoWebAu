@@ -17,7 +17,10 @@ export class DoWebAu {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         this.instrumentalUrl = options.instrumentalUrl;
         this.onRecorded = options.onRecorded;
-        this.mediaRecorderOptions = options.mediaRecorderOptions || {}; // 使用默认值或用户提供的选项
+        this.mediaRecorderOptions = options.mediaRecorderOptions || {
+            mimeType: 'audio/webm;codecs=opus',
+            audioBitsPerSecond: 128000 // 设置更高的比特率
+        }; // 使用默认值或用户提供的选项
     }
 
     private instrumentalUrl: string;
@@ -51,12 +54,7 @@ export class DoWebAu {
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
-                audio: {
-                    channelCount: 2,
-                    sampleRate: 44100,
-                    sampleSize: 16,
-                    echoCancellation: true
-                } });
+                audio: true });
             this.mediaRecorder = new MediaRecorder(stream, this.mediaRecorderOptions); // 使用用户提供的选项
             this.mediaRecorder.ondataavailable = event => {
                 this.chunks.push(event.data);
